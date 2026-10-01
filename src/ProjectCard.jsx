@@ -1,12 +1,18 @@
-import LikeButton
- from "./LikeButton"
+import { Link } from 'react-router-dom'
+import LikeButton from './LikeButton'
 
-function ProjectCard({ name, description }) {
+function ProjectCard({ id, name, description }) {
   return (
     <div className="project-card">
       <h2>{name}</h2>
+
       <p>{description}</p>
-      <LikeButton/>
+
+      <Link to={`/projects/${id}`}>
+        View Project
+      </Link>
+
+      <LikeButton />
     </div>
   )
 }
