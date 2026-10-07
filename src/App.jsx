@@ -3,6 +3,9 @@ import ProjectCard from './ProjectCard'
 import { projects } from './projects'
 import ProjectDetail from './ProjectDetail'
 import NotFound from './NotFound'
+import TaskList from './TaskList'
+import AddTask from './AddTask'
+import { useEffect,useState } from 'react'
 function Home() {
   return (
     <div>
@@ -30,6 +33,37 @@ function About() {
 }
 
 function App() {
+    const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/tasks")
+      .then((response) => response.json())
+      .then((data) => setTasks(data))
+      .catch((error) => console.error("Error fetching tasks:", error));
+  }, []);
+
+  const handleAddTask = (newTask) => {
+  setTasks((tasks) => [...tasks, newTask])
+}
+
+const handleDeleteTask = async (id) => {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/tasks/${id}`,
+      {
+        method: 'DELETE',
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Failed to delete task')
+    }
+
+    setTasks((tasks) => tasks.filter((task) => task.id !== id))
+  } catch (error) {
+    console.error('Error deleting task:', error)
+  }
+}
   return (
     <BrowserRouter>
       <nav>
@@ -44,7 +78,18 @@ function App() {
         <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <AddTask onAdd={handleAddTask} />
+      
+      
+      <div>
+      <TaskList 
+      tasks={tasks}
+      onDelete={handleDeleteTask}
+      />
+    </div>
     </BrowserRouter>
+
+    
   )
 }
 
